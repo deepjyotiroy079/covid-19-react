@@ -52,20 +52,22 @@ function App() {
   }, []);
 
   // console.log("actual data -> ",data);
-  console.log("Map countries ->", mapCountries);
+  // console.log("Map countries ->", mapCountries);
 
   const onCountryChange = async (event) => {
     const code = event.target.value;
     setCountry(code);
-
-    const url = code === "worldwide" ? `http://disease.sh/v3/covid-19/all`:`http://disease.sh/v3/covid-19/countries/${code}`;
+    const url = code === "worldwide" ? 'https://disease.sh/v3/covid-19/all':`http://disease.sh/v3/covid-19/countries/${code}`;
     console.log(code);
     await fetch(url)
                 .then(response => response.json())
                 .then((data) => {
                   setCountry(code);
                   setCountryInfo(data);
-                  setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+                  if (typeof data.countryInfo !== "undefined") {
+                    setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+                  }
+                  // setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
                   setMapZoom(4);
                 });
   };
@@ -80,7 +82,7 @@ function App() {
           <FormControl className="app_dropdown">
             <Select variant="outlined" value={country} onChange={onCountryChange}>
               {/* Loop through all the countries */}
-              <MenuItem value="worldwide">worldwide</MenuItem>
+              <MenuItem value="worldwide">World Wide</MenuItem>
               {countries.map((country) => (
                 <MenuItem value={country.value}>{country.name}</MenuItem>
               ))}
@@ -127,7 +129,7 @@ function App() {
 
       <Card className="app_right">
           <CardContent className="">
-            <div className="app__information">
+            <div className="app_information">
               <h3>Live Cases by Country</h3>
               <Table countries={tableData} />
               <h3>Worldwide new {casesType}</h3>
